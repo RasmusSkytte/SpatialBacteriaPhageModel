@@ -1,0 +1,1 @@
+Bacteria initialized at Z = 150

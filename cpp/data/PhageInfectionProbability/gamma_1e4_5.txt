@@ -1,0 +1,100 @@
+ColonySize was set to: 10.	 size obtained is: 10
+gamma was set to: 31623.	 gamma obtained is: 31623
+forcedInfected was set to: 2.	 size obtained is: 2
+	# of new infections: 1000 out of 1283 attempts
+	The probability of hitting a non-infected cell is: 0.779423
+
+forcedInfected was set to: 4.	 size obtained is: 4
+	# of new infections: 1000 out of 1681 attempts
+	The probability of hitting a non-infected cell is: 0.594884
+
+forcedInfected was set to: 6.	 size obtained is: 6
+	# of new infections: 1000 out of 2724 attempts
+	The probability of hitting a non-infected cell is: 0.367107
+
+forcedInfected was set to: 8.	 size obtained is: 8
+	# of new infections: 1000 out of 5599 attempts
+	The probability of hitting a non-infected cell is: 0.178603
+
+
+
+ColonySize was set to: 32.	 size obtained is: 32
+gamma was set to: 31623.	 gamma obtained is: 31623
+forcedInfected was set to: 6.	 size obtained is: 6
+	# of new infections: 1000 out of 1366 attempts
+	The probability of hitting a non-infected cell is: 0.732064
+
+forcedInfected was set to: 13.	 size obtained is: 13
+	# of new infections: 1000 out of 1937 attempts
+	The probability of hitting a non-infected cell is: 0.516262
+
+forcedInfected was set to: 19.	 size obtained is: 19
+	# of new infections: 1000 out of 3139 attempts
+	The probability of hitting a non-infected cell is: 0.318573
+
+forcedInfected was set to: 26.	 size obtained is: 26
+	# of new infections: 1000 out of 8043 attempts
+	The probability of hitting a non-infected cell is: 0.124332
+
+
+
+ColonySize was set to: 100.	 size obtained is: 100
+gamma was set to: 31623.	 gamma obtained is: 31623
+forcedInfected was set to: 20.	 size obtained is: 20
+	# of new infections: 1000 out of 1558 attempts
+	The probability of hitting a non-infected cell is: 0.641849
+
+forcedInfected was set to: 40.	 size obtained is: 40
+	# of new infections: 1000 out of 2497 attempts
+	The probability of hitting a non-infected cell is: 0.400481
+
+forcedInfected was set to: 60.	 size obtained is: 60
+	# of new infections: 1000 out of 5564 attempts
+	The probability of hitting a non-infected cell is: 0.179727
+
+forcedInfected was set to: 80.	 size obtained is: 80
+	# of new infections: 1000 out of 22166 attempts
+	The probability of hitting a non-infected cell is: 0.0451141
+
+
+
+ColonySize was set to: 316.	 size obtained is: 316
+gamma was set to: 31623.	 gamma obtained is: 31623
+forcedInfected was set to: 63.	 size obtained is: 63
+	# of new infections: 1000 out of 1825 attempts
+	The probability of hitting a non-infected cell is: 0.547945
+
+forcedInfected was set to: 126.	 size obtained is: 126
+	# of new infections: 1000 out of 4113 attempts
+	The probability of hitting a non-infected cell is: 0.243132
+
+forcedInfected was set to: 190.	 size obtained is: 190
+	# of new infections: 1000 out of 13969 attempts
+	The probability of hitting a non-infected cell is: 0.0715871
+
+forcedInfected was set to: 253.	 size obtained is: 253
+	# of new infections: 454 out of 50000 attempts
+	The probability of hitting a non-infected cell is: 0.00908
+
+
+
+ColonySize was set to: 1000.	 size obtained is: 1000
+gamma was set to: 31623.	 gamma obtained is: 31623
+forcedInfected was set to: 200.	 size obtained is: 200
+	# of new infections: 1000 out of 2222 attempts
+	The probability of hitting a non-infected cell is: 0.450045
+
+forcedInfected was set to: 400.	 size obtained is: 400
+	# of new infections: 1000 out of 8573 attempts
+	The probability of hitting a non-infected cell is: 0.116645
+
+forcedInfected was set to: 600.	 size obtained is: 600
+	# of new infections: 821 out of 50000 attempts
+	The probability of hitting a non-infected cell is: 0.01642
+
+forcedInfected was set to: 800.	 size obtained is: 800
+	# of new infections: 45 out of 50000 attempts
+	The probability of hitting a non-infected cell is: 0.0009
+
+
+
