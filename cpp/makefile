@@ -36,7 +36,7 @@ code.o : code.cpp code.hpp
 MicroColony.o : MicroColony.cpp MicroColony.hpp
 	g++ -g -std=c++0x -c MicroColony.cpp -O3 -fopenmp -larmadillo
 
-numThreads.hpp :
+numThreads :
 	@echo "int NUM_THREADS = $(NUM_THREADS);" > numThreads.hpp
 
 run : Example Dynamics Phasespace Experiment Resolution ModelContributions
@@ -67,16 +67,33 @@ run : Example Dynamics Phasespace Experiment Resolution ModelContributions
 
 	./ModelContributions
 
+ifeq ("$(wildcard *data/PhageInfectionProbability/gamma_1e2.txt)","")
 	./ShieldingFunction 100 	>> data/PhageInfectionProbability/gamma_1e2.txt
+endif
+ifeq ("$(wildcard *data/PhageInfectionProbability/gamma_1e2_5.txt)","")
 	./ShieldingFunction 316		>> data/PhageInfectionProbability/gamma_1e2_5.txt
+endif
+ifeq ("$(wildcard *data/PhageInfectionProbability/gamma_1e3.txt)","")
 	./ShieldingFunction 1000	>> data/PhageInfectionProbability/gamma_1e3.txt
+endif
+ifeq ("$(wildcard *data/PhageInfectionProbability/gamma_1e3_5.txt)","")
 	./ShieldingFunction 3162	>> data/PhageInfectionProbability/gamma_1e3_5.txt
+endif
+ifeq ("$(wildcard *data/PhageInfectionProbability/gamma_1e4.txt)","")
 	./ShieldingFunction 10000	>> data/PhageInfectionProbability/gamma_1e4.txt
+endif
+ifeq ("$(wildcard *data/PhageInfectionProbability/gamma_1e4_5.txt)","")
 	./ShieldingFunction 31623	>> data/PhageInfectionProbability/gamma_1e4_5.txt
+endif
+ifeq ("$(wildcard *data/PhageInfectionProbability/gamma_1e5.txt)","")
 	./ShieldingFunction 100000	>> data/PhageInfectionProbability/gamma_1e5.txt
+endif
+ifeq ("$(wildcard *data/PhageInfectionProbability/gamma_1e5_5.txt)","")
 	./ShieldingFunction 316228	>> data/PhageInfectionProbability/gamma_1e5_5.txt
+endif
+ifeq ("$(wildcard *data/PhageInfectionProbability/gamma_1e6.txt)","")
 	./ShieldingFunction 1000000	>> data/PhageInfectionProbability/gamma_1e6.txt
-
+endif
 
 clean :
 	rm -f *.o

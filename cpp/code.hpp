@@ -79,6 +79,8 @@ class Colonies3D {
     bool   shielding;               // When true the simulation uses the shielding function (full model)
     bool   reducedBeta;             // When true the simulation modifies the burst size by the growthfactor
 
+    bool   singleInternalState;     // Boolean to toggle how many internal infected states are used
+
     bool   reducedBoundary;         // When true, bacteria are spawned at X = 0 and Y = 0. And phages are only spawned within nGrid/s boxes from (0,0,z).
     int    s;
 
@@ -187,6 +189,7 @@ class Colonies3D {
     void        DisableShielding();                                             // Sets shielding bool to false
     void        DisablesClustering();                                           // Sets clustering bool to false
     void        ReducedBurstSize();                                             // Sets the simulation to limit beta as n -> 0
+    void        SingleInternalState();                                          // Enables the use of a single internal state
 
     void        ReducedBoundary(int s);                                         // Sets the reduced boundary bool to true and the value of s
 

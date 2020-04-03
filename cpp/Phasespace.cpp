@@ -145,7 +145,7 @@ int main(int argc, char** argv){
                 s.SetGridSize(nGrid);
 
                 // Set the zeta parameter
-                s.SurfacePermeability(0.2);
+                s.SurfacePermeability(0.1);
 
 
             } else if (model == 6) {        // Model with time delay, space and colony level protection (strong readsoprtion)

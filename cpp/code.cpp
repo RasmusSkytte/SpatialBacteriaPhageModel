@@ -57,6 +57,8 @@ Colonies3D::Colonies3D(double B_0, double P_0){
     shielding               = true;     // When true the simulation uses the shielding function (full model)
     reducedBeta             = false;    // When true the simulation modifies the burst size by the growthfactor
 
+    singleInternalState     = false;     // Boolean to toggle how many internal infected states are used
+
     reducedBoundary         = false;    // When true, bacteria are spawned at X = 0 and Y = 0. And phages are only spawned within nGrid boxes from (0,0,z).
     s                       = 1;
 
@@ -81,7 +83,7 @@ int Colonies3D::Run(double T_end) {
     // Generate a path
     path = GeneratePath();
 
-    // Initilize the simulation matrices
+    // Initialize the simulation matrices
     Initialize();
 
     // Export data
@@ -185,18 +187,20 @@ int Colonies3D::Run(double T_end) {
                             M = round(alpha * Beta * N);                        // Phages which reinfect the colony
 
                             // Non-bursting events
-                            N = ComputeEvents(tmpI8, p, 2); tmpI8 = max(0.0, tmpI8 - N); tmpI9 += N;
-                            N = ComputeEvents(tmpI7, p, 2); tmpI7 = max(0.0, tmpI7 - N); tmpI8 += N;
-                            N = ComputeEvents(tmpI6, p, 2); tmpI6 = max(0.0, tmpI6 - N); tmpI7 += N;
-                            N = ComputeEvents(tmpI5, p, 2); tmpI5 = max(0.0, tmpI5 - N); tmpI6 += N;
-                            N = ComputeEvents(tmpI4, p, 2); tmpI4 = max(0.0, tmpI4 - N); tmpI5 += N;
-                            N = ComputeEvents(tmpI3, p, 2); tmpI3 = max(0.0, tmpI3 - N); tmpI4 += N;
-                            N = ComputeEvents(tmpI2, p, 2); tmpI2 = max(0.0, tmpI2 - N); tmpI3 += N;
-                            N = ComputeEvents(tmpI1, p, 2); tmpI1 = max(0.0, tmpI1 - N); tmpI2 += N;
-                            N = ComputeEvents(tmpI0, p, 2); tmpI0 = max(0.0, tmpI0 - N); tmpI1 += N;
+                            if (not singleInternalState) {
+                                N = ComputeEvents(tmpI8, p, 2); tmpI8 = max(0.0, tmpI8 - N); tmpI9 += N;
+                                N = ComputeEvents(tmpI7, p, 2); tmpI7 = max(0.0, tmpI7 - N); tmpI8 += N;
+                                N = ComputeEvents(tmpI6, p, 2); tmpI6 = max(0.0, tmpI6 - N); tmpI7 += N;
+                                N = ComputeEvents(tmpI5, p, 2); tmpI5 = max(0.0, tmpI5 - N); tmpI6 += N;
+                                N = ComputeEvents(tmpI4, p, 2); tmpI4 = max(0.0, tmpI4 - N); tmpI5 += N;
+                                N = ComputeEvents(tmpI3, p, 2); tmpI3 = max(0.0, tmpI3 - N); tmpI4 += N;
+                                N = ComputeEvents(tmpI2, p, 2); tmpI2 = max(0.0, tmpI2 - N); tmpI3 += N;
+                                N = ComputeEvents(tmpI1, p, 2); tmpI1 = max(0.0, tmpI1 - N); tmpI2 += N;
+                                N = ComputeEvents(tmpI0, p, 2); tmpI0 = max(0.0, tmpI0 - N); tmpI1 += N;
+                            }
                         }
 
-                        // Infectons //////////////////////////////////////////////////////////////////
+                        // Infections /////////////////////////////////////////////////////////////////
                         if ((tmpOcc >= 1) and (tmpP >= 1)) {
                             double s;   // The factor which modifies the adsorption rate
                             double n;   // The number of targets the phage has
@@ -213,7 +217,7 @@ int Colonies3D::Run(double T_end) {
                             if (eta * s * dT >= 1) { // In the diffusion limited case every phage hits a target
                                 N = tmpP;
                             } else {
-                                p = 1 - pow(1 - eta * s * dT, n);        // Probability hitting any target
+                                p = 1 - pow(1 - eta * s * dT, n);  // Probability hitting any target
                                 N = ComputeEvents(tmpP, p, 4);     // Number of targets hit
                             }
 
@@ -226,23 +230,27 @@ int Colonies3D::Run(double T_end) {
                                 if (shielding) {
                                     // Absorbing medium model
                                     double d = pow(tmpOcc / tmpNC, 1.0 / 3.0) - pow(tmpB / tmpNC, 1.0 / 3.0);
-                                    S = exp(-zeta*d); // Probability of hitting succebtible target
+                                    S = exp(-zeta*d); // Probability of hitting susceptible target
 
                                 } else {
                                     // Well mixed model
                                     S = tmpB / tmpOcc;
                                 }
 
-                                p = max(0.0, min(tmpB / tmpOcc, S)); // Probability of hitting succebtible target
+                                p = max(0.0, min(tmpB / tmpOcc, S)); // Probability of hitting susceptible target
                                 N = ComputeEvents(N + M, p, 4);                  // Number of targets hit
 
-                                if (N > tmpB) N = tmpB;              // If more bacteria than present are set to be infeced, round down
+                                if (N > tmpB) N = tmpB;              // If more bacteria than present are set to be infected, round down
 
                                 // Update the counts
                                 tmpB = max(0.0, tmpB - N);
 
                                 if (r > 0.0) {
-                                    I0_new(i, j, k) += N;
+                                    if (not singleInternalState) {
+                                        I0_new(i, j, k) += N;
+                                    } else {
+                                        I9_new(i, j, k) += N;
+                                    }
                                 } else {
                                     P_new(i, j, k) += N * (1 - alpha) * Beta;
                                 }
@@ -461,36 +469,6 @@ int Colonies3D::Run(double T_end) {
             }
         }
 
-        // Fast exit conditions
-        // 1) There are no more sucebtible cells
-        // -> Convert all infected cells to phages and stop simulation
-        /*
-        if ((fastExit) and (accu(B) < 1)) {
-
-            double growthModifier = accu(nutrient)/(pow(nGridXY,2)*nGridZ) / (accu(nutrient)/(pow(nGridXY,2)*nGridZ) + K);
-
-            // Compute beta
-            double Beta = beta;
-            if (reducedBeta) {
-                Beta *= growthModifier;
-            }
-
-            P += (1-alpha) * Beta * (I0 + I1 + I2 + I3 + I4 + I5 + I6 + I7 + I8 + I9);
-            I0.zeros();
-            I1.zeros();
-            I2.zeros();
-            I3.zeros();
-            I4.zeros();
-            I5.zeros();
-            I6.zeros();
-            I7.zeros();
-            I8.zeros();
-            I9.zeros();
-            nC.zeros();
-            exit = true;
-        }
-        */
-
         // 2) There are no more alive cells
         // -> Stop simulation
 
@@ -644,7 +622,7 @@ void Colonies3D::Initialize() {
     eta = eta / dV;    // Number of collisions per gridpoint per hour
 
     // Adjust carrying capacity
-    K = K * n_0 / 1e12 * dV;   // Deterine the Monod growth factor used in n(i,j)/(n(i,j)+K)
+    K = K * n_0 / 1e12 * dV;   // Determine the Monod growth factor used in n(i,j)/(n(i,j)+K)
 
     // Initialize the bacteria and phage populations
     spawnBacteria();
@@ -653,7 +631,6 @@ void Colonies3D::Initialize() {
         T_i = -1;
     }
 }
-
 
 // Spawns the bacteria
 void Colonies3D::spawnBacteria() {
@@ -747,7 +724,6 @@ void Colonies3D::spawnBacteria() {
         f_out.close();
     }
 }
-
 
 // Spawns the phages
 void Colonies3D::spawnPhages() {
@@ -961,7 +937,7 @@ double Colonies3D::ComputeEvents(double n, double p, int flag) {
     return round(N);
 }
 
-// Computes how many particles has moved to neighbouing points
+// Computes how many particles has moved to neighbouring points
 void Colonies3D::ComputeDiffusion(double n, double lambda, double* n_0, double* n_u, double* n_d, double* n_l, double* n_r, double* n_f, double* n_b, int flag) {
 
     // Reset positions
@@ -1067,6 +1043,7 @@ void Colonies3D::SimulateExperimentalConditions(){experimentalConditions=true;} 
 void Colonies3D::DisableShielding(){shielding=false;}                           // Sets shielding bool to false
 void Colonies3D::DisablesClustering(){clustering=false;}                        // Sets clustering bool to false
 void Colonies3D::ReducedBurstSize(){reducedBeta=true;}                          // Sets the simulation to limit beta as n -> 0
+void Colonies3D::SingleInternalState(){singleInternalState=true;}               // Enables the use of a single internal state
 
 // Sets the reduced boundary bool to true and the value of s
 void Colonies3D::ReducedBoundary(int s) {
@@ -1127,8 +1104,8 @@ void Colonies3D::WriteLog() {
 
         // Store the initial densities
         f_log << "B_0 = " << fixed << setw(12)  << B_0      << "\n";    // Initial density of bacteria
-        f_log << "P_0 = " << fixed << setw(12)  << P_0      << "\n";    // Intiial density of phages
-        f_log << "n_0 = " << fixed << setw(12)  << n_0      << "\n";    // Intiial density of nutrient
+        f_log << "P_0 = " << fixed << setw(12)  << P_0      << "\n";    // Initial density of phages
+        f_log << "n_0 = " << fixed << setw(12)  << n_0      << "\n";    // Initial density of nutrient
         f_log << "K = "   << fixed << setw(12)  << K        << "\n";    // Carrying capacity
         f_log << "L = "                         << L        << "\n";    // Side-length of simulation array
         f_log << "H = "                         << H        << "\n";    // height of simulation array
