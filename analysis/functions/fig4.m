@@ -17,16 +17,17 @@ fh.Position = [750 50 3*wid+2*mar+3*sep+2*sep n*hei+2*mar+n*sep];
 
 clf
 % Prepare axes;
-ax = [];
-ch = [];
+ax = gobjects(n,3);
+ch = gobjects(n,3);
+
 for i = 1:n
-    
+
     subpaths = dir(sprintf('%s/Model_%d/',path,i));
     % Load data
     switch i
         case 1
             importPath = sprintf('%s/Model_%d/%s/data_Model_%d.mat',path,i,subpaths(end).name,i);
-        case 2            
+        case 2
             importPath = sprintf('%s/Model_%d/%s/data_Model_%d.mat',path,i,subpaths(end).name,i);
         case 3
             importPath = sprintf('%s/Model_%d/%s/data_Model_%d.mat',path,i,subpaths(end).name,i);
@@ -34,46 +35,46 @@ for i = 1:n
             importPath = sprintf('%s/Model_%d/%s/data_Model_%d.mat',path,i,subpaths(11).name,i);
     end
     model = importdata(importPath);
-    
-    
+
+
     T = [5 10 15];
     for j = 1:3
-        
+
         % Compute index
         I = 3*(i-1)+j;
-        
+
         % Create new axes
-        ax = [ax axes];
+        ax(I) = axes;
         ax(I).Units = 'pixels';
         ax(I).XTick = [];
         ax(I).YTick = [];
 
         ax(I).OuterPosition = [mar+sep+(j-1)*(wid+sep)    (4-i)*(hei+sep)+mar+sep   wid hei];
         ax(I).Position      = [mar+sep+(j-1)*(wid+sep)    (4-i)*(hei+sep)+mar+sep   wid hei];
-        
+
         % Calculate which time to plot:
         t = T(j);
-        
+
         % Plot data
         ind = model.T == t;
-        
+
         PP = log10(model.P(:,:,ind));
         BB = log10(model.B(:,:,ind));
         II = log10(model.I(:,:,ind));
-        
+
         imagesc(ax(I),log10(model.b(:,:,ind))); hold on;
         contour(ax(I),log10(model.n(:,:,ind)),log10((1e9-2e8)*[1 1]),'r','LineWidth',2);
-        ch = [ch ax(I).Children(1)];
+        ch(I) = ax(I).Children(1);
         scatter(ax(I),17.6,11,'wo','filled');
-        
+
         % Set axes options
         ax(I).YDir = 'normal';
         ax(I).CLim = [0 9];
         ax(I).XLim = [1-0.5 sum(model.PFU <= 1e9)+0.5];
         ax(I).FontSize = 14;
-        
+
         ax(I).LineWidth = 2;
-        
+
         if j > 1
             ax(I).YTick = [];
         else
@@ -88,7 +89,7 @@ for i = 1:n
             ax(I).XTick(1)   = ax(I).XTick(1)+0.5;
             ax(I).XTick(end) = ax(I).XTick(end)-0.5;
         end
-        
+
         if i == 1
             title(sprintf('T = %d h',j*5),'FontWeight','Normal')
         end
@@ -150,7 +151,7 @@ cb.FontSize = 12;
 cb.Ticks = 0:2:10;
 cb.TickLabels = cellfun(@(x)sprintf('10^{%d}',x),num2cell(cb.Ticks'),'UniformOutput',false);
 caxis([0 10])
- 
+
 
 
 delete(ch(1:3))
@@ -166,4 +167,3 @@ end
 print('-r300','../Fig_4/Fig4.tif','-dtiff')
 
 
-    

@@ -24,6 +24,11 @@ gamma = [10^2 10^2.5 10^3 10^3.5 10^4 10^4.5 10^5 10^5.5 10^6];
 % Make mesh grid of sample points
 [i,c] = meshgrid(InfectionFraction,ColonySize);
 
+% Allocate
+SuccessRate = cell(9,1);
+chi2_k      = cell(9,1);
+chi2_zeta   = cell(9,1);
+
 % Load he data
 for g = 1:9
 
@@ -86,10 +91,10 @@ xlabel('\eta ({\mu}m^3/h)')
 ylabel('\zeta')
 hold off
 xlim([10^(2.5) 10^(5.5)])
-ylim([0.5 3.5])
+ylim([0 4])
 grid on;
 ax = gca;
-ax.YTick = 0.5:0.5:3.5;
+ax.YTick = 0:4;
 ax.FontSize = 20;
 
 ax.LineWidth = 2;
@@ -111,10 +116,10 @@ for g = 5
     fh.Position = [1500  -150   750   600];
 
     cc = logspace(0,log10(ColonySize(end)),100);
-    
+
     ax = axes;
     ax.NextPlot = 'add';
-    
+
     set(ax,'XScale','log')
     ax.FontSize = 30;
     ax.Box = 'on';
@@ -129,13 +134,16 @@ for g = 5
     fh.Color = [1 1 1];
 
     ax.LineWidth = 2;
-    
+
     col = lines(4);
-    
+
     for n = 1:4
-        
+
         ylabel(['S_' num2str(n)])
-        
+
+        % Allocate
+        h = gobjects(4,1);
+
         for j = 1:4
             switch n
                 case 1
@@ -152,13 +160,13 @@ for g = 5
                     string = 'd';
             end
         end
-        
+
         ax0 = axes();
         ax0.Visible = 'off';
         ax0.Position = [0 0 1 1];
         text(ax0,0.025,0.975,string,'FontSize',30,'FontWeight','bold','HorizontalAlignment','center')
 
-        
+
         for p = 1:numel(SuccessRate{g})
 
             switch n
@@ -175,14 +183,14 @@ for g = 5
             s(p) = scatter(ax,c(p),SuccessRate{g}(p),65,'o','filled','MarkerFaceColor',col(i(p)==[0.2 0.4 0.6 0.8],:),'MarkerEdgeColor','k','LineWidth',1,'DisplayName',sprintf('Data, I = %d%%',100*i(p)));
 
         end
-        
+
         foo(1) = scatter(ax,0,0,'s','filled','MarkerFaceColor',col(1,:),'DisplayName','f = 20%');
         foo(2) = scatter(ax,0,0,'s','filled','MarkerFaceColor',col(2,:),'DisplayName','f = 40%');
         foo(3) = scatter(ax,0,0,'s','filled','MarkerFaceColor',col(3,:),'DisplayName','f = 60%');
         foo(4) = scatter(ax,0,0,'s','filled','MarkerFaceColor',col(4,:),'DisplayName','f = 80%');
-          
+
         l = legend(foo,'Location','NorthEastOutside','FontSize',18);
-        
+
         set(gcf,'InvertHardcopy','off')
 
         if ~exist('../Fig_S2','dir')
