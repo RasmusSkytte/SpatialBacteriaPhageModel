@@ -28,12 +28,12 @@ int main(int argc, char** argv){
     vector<double> B_0 = {pow(10, 0.00), pow(10, 0.50), pow(10, 1.00), pow(10, 1.50), pow(10, 2.00), pow(10, 2.50), pow(10, 3.00), pow(10, 3.50), pow(10, 4.00), pow(10, 4.50), pow(10, 5.00), pow(10, 5.50), pow(10, 6.00), pow(10, 6.50), pow(10, 7.00), pow(10, 7.50), pow(10, 8.00), pow(10, 8.50), pow(10, 9.00)};
     vector<double> P_0 = {pow(10, 0.00), pow(10, 0.50), pow(10, 1.00), pow(10, 1.50), pow(10, 2.00), pow(10, 2.50), pow(10, 3.00), pow(10, 3.50), pow(10, 4.00), pow(10, 4.50), pow(10, 5.00), pow(10, 5.50), pow(10, 6.00), pow(10, 6.50), pow(10, 7.00), pow(10, 7.50), pow(10, 8.00), pow(10, 8.50), pow(10, 9.00)};
 
-    double T = 20; 	// Simulation length
+    double T = 15; 	// Simulation length
 
     omp_set_dynamic(0);
     #pragma omp parallel for collapse(3) schedule(dynamic) num_threads(NUM_THREADS)
     for (int k = 0; k < 6; k++) {
-        for (int j = 0; j < P_0.size(); j++) {
+        for (int j = P_0.size()-1; j >= 0; j--) {
             for (int i = 0; i < B_0.size(); i++) {
 
                 Colonies3D s(B_0[i],P_0[j]);

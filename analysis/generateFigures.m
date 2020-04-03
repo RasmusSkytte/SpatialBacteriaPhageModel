@@ -21,7 +21,7 @@ run('functions/fig4')
 
 % Figure 5
 run('functions/fig5b')
-run('functions/fig5c_and_figS10a')
+run('functions/fig5c_and_figS11a')
 warning('Figure 5 must be finished manually')
 
 % Figure S1
@@ -55,10 +55,13 @@ run('functions/figS8')
 run('functions/figS9')
 
 % Figure S10
-run('functions/figS10b')
+run('functions/figS10')
 
-!convert -append Fig_S10/upper.tif Fig_S10/lower.tif Fig_S10/FigS10.tif
-!rm Fig_S10/upper.tif Fig_S10/lower.tif
+% Figure S11
+run('functions/figS11b')
+
+!convert -append Fig_S11/upper.tif Fig_S11/lower.tif Fig_S11/FigS11.tif
+!rm Fig_S11/upper.tif Fig_S11/lower.tif
 
 % Compress images
 !find . -name '*.tif' -exec convert {} -compress lzw {} \;

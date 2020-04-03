@@ -95,7 +95,7 @@ class Colonies3D {
     std::uniform_real_distribution  <double> rand;
     std::normal_distribution        <double> randn;
 
-    std::ofstream f_B;              // Filestream to save configuration of sucebtible cells
+    std::ofstream f_B;              // Filestream to save configuration of susceptible cells
     std::ofstream f_I;              // Filestream to save configuration of infected cells
     std::ofstream f_P;              // Filestream to save configuration of phages
     std::ofstream f_n;              // Filestream to save configuration of nutrient
@@ -156,8 +156,8 @@ class Colonies3D {
     void        spawnPhages();                                                  // Spawns the phages
     void        ComputeTimeStep();                                              // Computes the size of the time-step needed
     double      ComputeEvents(double n, double p, int flag);                    // Returns the number of events ocurring for given n and p
-    void        ComputeDiffusion(double n, double lambda,                       // Computes how many particles has moved to neighbouing points
-                    double* n_0, double* n_u, double* n_d, double* n_l, double* n_r, double* n_f, double* n_b, int flag);
+    void        ComputeDiffusion(double n, double lambda,                       // Computes how many particles has moved to neighboring points
+                    double* n_0, double* n_u, double* n_d, double* n_l, double* n_r, double* n_f, double* n_b);
 
  public:
     void        SetLength(double L);                                            // Set the side-length of the simulation
@@ -221,8 +221,8 @@ class Colonies3D {
     std::string GeneratePath();                                                 // Generates a save path for datafiles
 
  public:
-    void        SetFolderNumber(int number);                                    // Sets the folder number (useful when running parralel code)
-    void        SetPath(std::string& path);                                     // Sets the folder path (useful when running parralel code)
+    void        SetFolderNumber(int number);                                    // Sets the folder number (useful when running parallel code)
+    void        SetPath(std::string& path);                                     // Sets the folder path (useful when running parallel code)
 
     // Get properties
     std::string GetPath();                                                      // Returns the save path

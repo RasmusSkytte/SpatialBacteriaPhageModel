@@ -16,10 +16,18 @@ for m = [1 2 3 4]
     % Reset
     clf;
     
+    subpaths = dir(sprintf('%s/Model_%d/',path,m));
     % Load data
-    subpaths = ls(sprintf('%s/Model_%d',path,m));
-    subpaths = strsplit(subpaths(1:end-1),' ');
-    importPath = sprintf('%s/Model_%d/%s/data_Model_%d.mat',path,m,subpaths{end},m);
+    switch m
+        case 1
+            importPath = sprintf('%s/Model_%d/%s/data_Model_%d.mat',path,m,subpaths(end).name,m);
+        case 2            
+            importPath = sprintf('%s/Model_%d/%s/data_Model_%d.mat',path,m,subpaths(end).name,m);
+        case 3
+            importPath = sprintf('%s/Model_%d/%s/data_Model_%d.mat',path,m,subpaths(end).name,m);
+        case 4
+            importPath = sprintf('%s/Model_%d/%s/data_Model_%d.mat',path,m,subpaths(11).name,m);
+    end
     model = importdata(importPath);
     
     % Prepare axes

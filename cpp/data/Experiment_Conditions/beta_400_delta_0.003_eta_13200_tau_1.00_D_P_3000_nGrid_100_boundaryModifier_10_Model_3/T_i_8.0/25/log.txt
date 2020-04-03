@@ -24,7 +24,8 @@ s = 10
 experimentalConditions = 1
 clustering = 0
 shielding = 0
+singleInternalState = 0
 reducedBeta = 0
 reducedBoundary = 1
-Warning: Maximum Density Large!
->>Simulation completed without exit flag<<
+>>Fast-exit condition met! Exiting...<<
+>>Simulation completed with exit flag<<

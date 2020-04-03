@@ -21,10 +21,18 @@ ax = [];
 ch = [];
 for i = 1:n
     
+    subpaths = dir(sprintf('%s/Model_%d/',path,i));
     % Load data
-    subpaths = ls(sprintf('%s/Model_%d',path,i));
-    subpaths = strsplit(subpaths(1:end-1),' ');
-    importPath = sprintf('%s/Model_%d/%s/data_Model_%d.mat',path,i,subpaths{end},i);
+    switch i
+        case 1
+            importPath = sprintf('%s/Model_%d/%s/data_Model_%d.mat',path,i,subpaths(end).name,i);
+        case 2            
+            importPath = sprintf('%s/Model_%d/%s/data_Model_%d.mat',path,i,subpaths(end).name,i);
+        case 3
+            importPath = sprintf('%s/Model_%d/%s/data_Model_%d.mat',path,i,subpaths(end).name,i);
+        case 4
+            importPath = sprintf('%s/Model_%d/%s/data_Model_%d.mat',path,i,subpaths(11).name,i);
+    end
     model = importdata(importPath);
     
     

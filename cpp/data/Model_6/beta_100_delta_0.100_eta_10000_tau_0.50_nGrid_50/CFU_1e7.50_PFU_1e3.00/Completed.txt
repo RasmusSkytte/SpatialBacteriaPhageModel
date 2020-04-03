@@ -1,1 +1,2 @@
-	Simulation complete after 49 minutes and 37 seconds.
+	Simulation complete after 9 minutes and 22 seconds.
+

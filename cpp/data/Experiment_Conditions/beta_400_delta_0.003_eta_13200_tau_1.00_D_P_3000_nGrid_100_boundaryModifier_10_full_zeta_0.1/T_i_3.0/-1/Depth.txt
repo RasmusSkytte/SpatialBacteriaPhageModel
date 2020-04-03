@@ -1,1 +1,1 @@
-Bacteria initialized at Z = 350
+Bacteria initialized at Z = 250

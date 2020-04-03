@@ -18,12 +18,14 @@ D_B = 0.000000
 D_P = 10000.000000
 D_n = 2500000.000000
 dT = 0.002000
-T_end = 20.000000
+T_end = 15.000000
 rngSeed = 5.000000
 s = 1
 experimentalConditions = 0
 clustering = 1
 shielding = 1
+singleInternalState = 0
 reducedBeta = 0
 reducedBoundary = 0
+>>Nutrient consumed! Exiting...<<
 >>Simulation completed with exit flag<<

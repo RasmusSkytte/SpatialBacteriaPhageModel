@@ -24,15 +24,15 @@ for i = 1:n
     switch i
         case 1
             subpaths = dir(sprintf('%s/Model_4',path));
-            importPath = sprintf('%s/Model_4/%s/data_Model_4.mat',path,subpaths(end).name);
+            importPath = sprintf('%s/Model_4/%s/data_Model_4.mat',path,subpaths(11).name);
         case 2
-            subpaths = dir(sprintf('%s/Model_4',path));
+            subpaths = dir(sprintf('%s/Model_4_noClustering',path));
             importPath = sprintf('%s/Model_4_noClustering/%s/data_Model_4_noClustering.mat',path,subpaths(end).name);
         case 3
-            subpaths = dir(sprintf('%s/Model_4',path));
+            subpaths = dir(sprintf('%s/Model_4_noShielding',path));
             importPath = sprintf('%s/Model_4_noShielding/%s/data_Model_4_noShielding.mat',path,subpaths(end).name);
         case 4
-            subpaths = dir(sprintf('%s/Model_4',path));
+            subpaths = dir(sprintf('%s/Model_4_noReadsorption',path));
             importPath = sprintf('%s/Model_4_noReadsorption/%s/data_Model_4_noReadsorption.mat',path,subpaths(end).name);
     end
     model = importdata(importPath);

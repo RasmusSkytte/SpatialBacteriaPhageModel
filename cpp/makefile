@@ -1,17 +1,14 @@
 CC=g++
 CLINKS= -larmadillo -fopenmp
-CFLAGS= -g -std=c++0x -march=native
-#CFLAGS= -g -std=c++0x -O3 -march=native
+#CFLAGS= -g -std=c++0x -march=native
+CFLAGS= -std=c++0x -O3 -march=native
 
 NUM_THREADS=64
 
-all : numThreads Example Dynamics Phasespace Experiment Resolution ShieldingFunction ModelContributions run
+all : run
 
 Example : Example.cpp code.o
 	$(CC) $(CFLAGS) -o Example Example.cpp code.o $(CLINKS)
-
-Dynamics : Dynamics.cpp code.o
-	$(CC) $(CFLAGS) -o Dynamics Dynamics.cpp code.o $(CLINKS)
 
 Phasespace : Phasespace.cpp code.o numThreads
 	$(CC) $(CFLAGS) -o Phasespace Phasespace.cpp code.o $(CLINKS)
@@ -19,11 +16,12 @@ Phasespace : Phasespace.cpp code.o numThreads
 Experiment : Experiment.cpp code.o numThreads
 	$(CC) $(CFLAGS) -o Experiment Experiment.cpp code.o $(CLINKS)
 
-Resolution : Resolution.cpp code.o numThreads
-	$(CC) $(CFLAGS) -o Resolution Resolution.cpp code.o $(CLINKS)
+Convergence : Convergence.cpp code.o numThreads
+	$(CC) $(CFLAGS) -o Convergence Convergence.cpp code.o $(CLINKS)
 
 ShieldingFunction : ShieldingFunction.o MicroColony.o
 	g++ -g -std=c++0x -o ShieldingFunction ShieldingFunction.o MicroColony.o -O3 -fopenmp
+
 ShieldingFunction.o : ShieldingFunction.cpp
 	g++ -g -std=c++0x -c ShieldingFunction.cpp -O3 -fopenmp -larmadillo
 
@@ -39,31 +37,22 @@ MicroColony.o : MicroColony.cpp MicroColony.hpp
 numThreads :
 	@echo "int NUM_THREADS = $(NUM_THREADS);" > numThreads.hpp
 
-run : Example Dynamics Phasespace Experiment Resolution ModelContributions
+run : Example Phasespace Experiment Convergence ModelContributions
 
 	mkdir -p data
 	mkdir -p data/PhageInfectionProbability
 
+<<<<<<< HEAD
+	./Convergence
+=======
+	#./Convergence
+>>>>>>> 880145737b9c4327a084362a992158dc4315db64
+
 	./Example
 
-	./Dynamics 1
-	./Dynamics 2
-	./Dynamics 3
-	./Dynamics 4
-
-	./Phasespace 1
-	./Phasespace 2
-	./Phasespace 3
-	./Phasespace 4
-	./Phasespace 5
-	./Phasespace 6
-	./Phasespace 7
-	./Phasespace 8
-	./Phasespace 9
+	./Phasespace
 
 	./Experiment
-
-	./Resolution
 
 	./ModelContributions
 
@@ -98,10 +87,9 @@ endif
 clean :
 	rm -f *.o
 	rm -f Example
-	rm -f Dynamics
 	rm -f Phasespace
 	rm -f Experiment
-	rm -f Resolution
-	rm -f ShieldingFunction
+	rm -f Convergence
 	rm -f ModelContributions
+	rm -f ShieldingFunction
 	rm -f numThreads.hpp

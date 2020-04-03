@@ -48,9 +48,8 @@ def reshape( array ) :
 def Visualize3D() :
 
 	cwd = os.getcwd()
-	path = cwd.replace('analysis/functions','cpp/data/3D_Example_Full_Model/')
+	path = cwd.replace('analysis','cpp/data/3D_Example_Full_Model/')
 	os.chdir(path)
-
 	exit = False
 
 	# Check folder has the correct files
@@ -127,11 +126,11 @@ def Visualize3D() :
 
 	xyticks = [-params['L']/2, -params['L']/4, 0, params['L']/4, params['L']/2]
 	zticks = [-params['H']/2, -params['H']/4, 0, params['H']/4, params['H']/2]
-	xlabels = ['$%.1f\cdot 10^{%.0f}$        ' % (t/pow(10,np.floor(np.log10(abs(t)))), np.floor(np.log10(abs(t)))) for t in xyticks]
+	xlabels = ['$%.1f\cdot 10^{%.0f}$      ' % (t/pow(10,np.floor(np.log10(abs(t)))), np.floor(np.log10(abs(t)))) for t in xyticks]
 	xlabels[(len(xyticks)-1)//2] = '$0.0$'
-	ylabels = ['       $%.1f\cdot 10^{%.0f}$' % (t/pow(10,np.floor(np.log10(abs(t)))), np.floor(np.log10(abs(t)))) for t in xyticks]
+	ylabels = ['         $%.1f\cdot 10^{%.0f}$' % (t/pow(10,np.floor(np.log10(abs(t)))), np.floor(np.log10(abs(t)))) for t in xyticks]
 	ylabels[(len(xyticks)-1)//2] = '$0.0$'
-	zlabels = ['          $%.1f\cdot 10^{%.0f}$' % (t/pow(10,np.floor(np.log10(abs(t)))), np.floor(np.log10(abs(t)))) for t in zticks]
+	zlabels = ['       $%.1f\cdot 10^{%.0f}$' % (t/pow(10,np.floor(np.log10(abs(t)))), np.floor(np.log10(abs(t)))) for t in zticks]
 	zlabels[(len(zticks)-1)//2] = '$0.0$'
 
 	# Prepare x,y,z coordinates for scatter plot
@@ -224,7 +223,7 @@ def Visualize3D() :
 			ax.set_yticklabels(ylabels,fontsize=8, verticalalignment='top', **font)
 			ax.set_zticklabels(zlabels,fontsize=8, verticalalignment='top', **font)
 			ax.set_xlabel('x (µm)',fontsize=12,labelpad=10, **font)
-			ax.set_ylabel('y (µm)',fontsize=12,labelpad=10, **font)
+			ax.set_ylabel('y (µm)',fontsize=12,labelpad=8, **font)
 			ax.set_zlabel('z (µm)',fontsize=12,labelpad=12, **font)
 			plt.savefig(outputPath, dpi=300)
 			plt.cla()
@@ -256,7 +255,7 @@ def Visualize3D() :
 			ax.set_yticklabels(ylabels,fontsize=8, verticalalignment='top', **font)
 			ax.set_zticklabels(zlabels,fontsize=8, verticalalignment='top', **font)
 			ax.set_xlabel('x (µm)',fontsize=12,labelpad=10, **font)
-			ax.set_ylabel('y (µm)',fontsize=12,labelpad=10, **font)
+			ax.set_ylabel('y (µm)',fontsize=12,labelpad=8, **font)
 			ax.set_zlabel('z (µm)',fontsize=12,labelpad=12, **font)
 			plt.savefig(outputPath, dpi=300)
 			plt.cla()
@@ -277,7 +276,7 @@ def Visualize3D() :
 			ax.set_yticklabels(ylabels,fontsize=8, verticalalignment='top', **font)
 			ax.set_zticklabels(zlabels,fontsize=8, verticalalignment='top', **font)
 			ax.set_xlabel('x (µm)',fontsize=12,labelpad=10, **font)
-			ax.set_ylabel('y (µm)',fontsize=12,labelpad=10, **font)
+			ax.set_ylabel('y (µm)',fontsize=12,labelpad=8, **font)
 			ax.set_zlabel('z (µm)',fontsize=12,labelpad=12, **font)
 			plt.savefig(outputPath, dpi=300)
 			plt.cla()
@@ -310,7 +309,7 @@ def Visualize3D() :
 			ax.set_yticklabels(ylabels,fontsize=8, verticalalignment='top', **font)
 			ax.set_zticklabels(zlabels,fontsize=8, verticalalignment='top', **font)
 			ax.set_xlabel('x (µm)',fontsize=12,labelpad=10, **font)
-			ax.set_ylabel('y (µm)',fontsize=12,labelpad=10, **font)
+			ax.set_ylabel('y (µm)',fontsize=12,labelpad=8, **font)
 			ax.set_zlabel('z (µm)',fontsize=12,labelpad=12, **font)
 			plt.savefig(outputPath, dpi=300)
 			plt.cla()

@@ -23,11 +23,11 @@ for i = 1:n
     % Load data
     switch i
         case 1
-            subpaths = dir(sprintf('%s/Model_4_noReadsorption',path));
-            importPath = sprintf('%s/Model_4_noReadsorption/%s/data_Model_4_noReadsorption.mat',path,subpaths(end).name);
+            subpaths = dir(sprintf('%s/Model_4_noReadsorption_CorrectedInfections',path));
+            importPath = sprintf('%s/Model_4_noReadsorption_CorrectedInfections/%s/data_Model_4_noReadsorption_CorrectedInfections.mat',path,subpaths(end).name);
         case 2
             subpaths = dir(sprintf('%s/Model_4',path));
-            importPath = sprintf('%s/Model_4/%s/data_Model_4.mat',path,subpaths(end).name);
+            importPath = sprintf('%s/Model_4/%s/data_Model_4.mat',path,subpaths(11).name);
         otherwise
             subpaths = dir(sprintf('%s/Model_%d',path,i+2));
             importPath = sprintf('%s/Model_%d/%s/data_Model_%d.mat',path,i+3,subpaths(end).name,i+3);

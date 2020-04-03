@@ -11,7 +11,7 @@ Colonies3D::Colonies3D(double B_0, double P_0){
     this->B_0 = B_0;
     this->P_0 = P_0;
 
-    // Set some default parameters (initlize some default objects)
+    // Set some default parameters (initialize some default objects)
     K                       = 1.0 / 5.0;//          Half-Speed constant
     n_0                     = 1e9;      // [1/ml]   Initial nutrient level (Carrying capacity per ml)
 
@@ -32,7 +32,7 @@ Colonies3D::Colonies3D(double B_0, double P_0){
     zeta                    = 1.0;      //          permeability of colony surface
 
     D_P                     = 1e4;      // [µm^2/h] Diffusion constant for the phage
-    D_B                     = 0;//D_P/20;   // [µm^2/h] Diffusion constant for the cells
+    D_B                     = 0;        // [µm^2/h] Diffusion constant for the cells
     D_n                     = 25e5;     // [µm^2/h] Diffusion constant for the nutrient
 
     T                       = 0;        // [h]      Current time
@@ -57,7 +57,7 @@ Colonies3D::Colonies3D(double B_0, double P_0){
     shielding               = true;     // When true the simulation uses the shielding function (full model)
     reducedBeta             = false;    // When true the simulation modifies the burst size by the growthfactor
 
-    singleInternalState     = false;     // Boolean to toggle how many internal infected states are used
+    singleInternalState     = false;    // Boolean to toggle how many internal infected states are used
 
     reducedBoundary         = false;    // When true, bacteria are spawned at X = 0 and Y = 0. And phages are only spawned within nGrid boxes from (0,0,z).
     s                       = 1;
@@ -156,27 +156,30 @@ int Colonies3D::Run(double T_end) {
                         double M = 0;
 
                         // Birth //////////////////////////////////////////////////////////////////////
-                        p = g*growthModifier*dT;
-                        if (tmpNutrient < 1) p = 0;
-                        N = ComputeEvents(tmpB, p, 1);
+                        if (tmpNutrient > 1) {
+
+                            // Compute the number of birth events
+                            p = g*growthModifier*dT;
+                            N = ComputeEvents(tmpB, p, 0);
 
 
-                        // Ensure there is enough nutrient
-                        if ( N > tmpNutrient ) {
-                            N = round( tmpNutrient );
+                            // Ensure there is enough nutrient
+                            if ( N > tmpNutrient ) {
+                                N = round( tmpNutrient );
+                            }
+
+                            // Update count
+                            B_new(i, j, k) += N;
+                            tmpNutrient = max(0.0, tmpNutrient - N);
+
                         }
 
-                        // Update count
-                        B_new(i, j, k) += N;
-                        tmpNutrient = max(0.0, tmpNutrient - N);
-
                         // Increase Infections ////////////////////////////////////////////////////////
-                        if (r > 0.0) {
+                        if ((r > 0.0) and (tmpNutrient > 1)) {
 
+                            // Compute the number of infection increase events
                             p = r*growthModifier*dT;
-                            if (tmpNutrient < 1) p = 0;
-
-                            N = ComputeEvents(tmpI9, p, 2);  // Bursting events
+                            N = ComputeEvents(tmpI9, p, 0);  // Bursting events
 
                             if (N > tmpI9) N = tmpI9;        // If more bacteria than present are set to burst, round down
 
@@ -188,15 +191,15 @@ int Colonies3D::Run(double T_end) {
 
                             // Non-bursting events
                             if (not singleInternalState) {
-                                N = ComputeEvents(tmpI8, p, 2); tmpI8 = max(0.0, tmpI8 - N); tmpI9 += N;
-                                N = ComputeEvents(tmpI7, p, 2); tmpI7 = max(0.0, tmpI7 - N); tmpI8 += N;
-                                N = ComputeEvents(tmpI6, p, 2); tmpI6 = max(0.0, tmpI6 - N); tmpI7 += N;
-                                N = ComputeEvents(tmpI5, p, 2); tmpI5 = max(0.0, tmpI5 - N); tmpI6 += N;
-                                N = ComputeEvents(tmpI4, p, 2); tmpI4 = max(0.0, tmpI4 - N); tmpI5 += N;
-                                N = ComputeEvents(tmpI3, p, 2); tmpI3 = max(0.0, tmpI3 - N); tmpI4 += N;
-                                N = ComputeEvents(tmpI2, p, 2); tmpI2 = max(0.0, tmpI2 - N); tmpI3 += N;
-                                N = ComputeEvents(tmpI1, p, 2); tmpI1 = max(0.0, tmpI1 - N); tmpI2 += N;
-                                N = ComputeEvents(tmpI0, p, 2); tmpI0 = max(0.0, tmpI0 - N); tmpI1 += N;
+                                N = ComputeEvents(tmpI8, p, 0); tmpI8 = max(0.0, tmpI8 - N); tmpI9 += N;
+                                N = ComputeEvents(tmpI7, p, 0); tmpI7 = max(0.0, tmpI7 - N); tmpI8 += N;
+                                N = ComputeEvents(tmpI6, p, 0); tmpI6 = max(0.0, tmpI6 - N); tmpI7 += N;
+                                N = ComputeEvents(tmpI5, p, 0); tmpI5 = max(0.0, tmpI5 - N); tmpI6 += N;
+                                N = ComputeEvents(tmpI4, p, 0); tmpI4 = max(0.0, tmpI4 - N); tmpI5 += N;
+                                N = ComputeEvents(tmpI3, p, 0); tmpI3 = max(0.0, tmpI3 - N); tmpI4 += N;
+                                N = ComputeEvents(tmpI2, p, 0); tmpI2 = max(0.0, tmpI2 - N); tmpI3 += N;
+                                N = ComputeEvents(tmpI1, p, 0); tmpI1 = max(0.0, tmpI1 - N); tmpI2 += N;
+                                N = ComputeEvents(tmpI0, p, 0); tmpI0 = max(0.0, tmpI0 - N); tmpI1 += N;
                             }
                         }
 
@@ -218,50 +221,74 @@ int Colonies3D::Run(double T_end) {
                                 N = tmpP;
                             } else {
                                 p = 1 - pow(1 - eta * s * dT, n);  // Probability hitting any target
-                                N = ComputeEvents(tmpP, p, 4);     // Number of targets hit
+                                N = ComputeEvents(tmpP, p, 0);     // Number of targets hit
                             }
 
                             // If bacteria were hit, update events
                             if ((N + M) >= 1) {
 
-                                tmpP    = max(0.0, tmpP - N);     // Update count
+                                // Update phage count
+                                tmpP = max(0.0, tmpP - N);
 
-                                double S;
-                                if (shielding) {
-                                    // Absorbing medium model
-                                    double d = pow(tmpOcc / tmpNC, 1.0 / 3.0) - pow(tmpB / tmpNC, 1.0 / 3.0);
-                                    S = exp(-zeta*d); // Probability of hitting susceptible target
+                                // Compute the number of new infected states
+                                if (tmpB > 0.0) {
 
-                                } else {
-                                    // Well mixed model
-                                    S = tmpB / tmpOcc;
-                                }
+                                    // Count the number of new infections
+                                    int newInfections = 0;
 
-                                p = max(0.0, min(tmpB / tmpOcc, S)); // Probability of hitting susceptible target
-                                N = ComputeEvents(N + M, p, 4);                  // Number of targets hit
+                                    // Loop over adsorption events
+                                    for (int l = 0; l < M + N; l++) {
 
-                                if (N > tmpB) N = tmpB;              // If more bacteria than present are set to be infected, round down
+                                        // Determine shielding function value
+                                        double S;
+                                        if (shielding) {
+                                            // Absorbing medium model
+                                            double d = pow(tmpOcc / tmpNC, 1.0 / 3.0) - pow((tmpB - newInfections) / tmpNC, 1.0 / 3.0);
+                                            S = exp(-zeta*d); // Probability of hitting susceptible target
 
-                                // Update the counts
-                                tmpB = max(0.0, tmpB - N);
+                                            // Compute probability of hitting susceptible target
+                                            p = max(0.0, min((tmpB - newInfections) / tmpOcc, S));
 
-                                if (r > 0.0) {
-                                    if (not singleInternalState) {
-                                        I0_new(i, j, k) += N;
-                                    } else {
-                                        I9_new(i, j, k) += N;
+                                        } else {
+                                            // Well mixed model
+                                            p = max(0.0, (tmpB - newInfections) / tmpOcc);
+                                        }
+
+                                        // Check for hits
+                                        if (ComputeEvents(1, p, 1) == 1) {
+                                            newInfections++;
+                                            if (newInfections > tmpB) {
+                                                newInfections = tmpB;
+                                                break;
+                                            }
+                                        }
+
                                     }
-                                } else {
-                                    P_new(i, j, k) += N * (1 - alpha) * Beta;
+                                    N = newInfections;   // Number of targets hit
+
+                                    // Update the counts
+                                    tmpB = max(0.0, tmpB - N);
+
+                                    if (r > 0.0) {
+                                        if (not singleInternalState) {
+                                            I0_new(i, j, k) += N;
+                                        } else {
+                                            I9_new(i, j, k) += N;
+                                        }
+                                    } else {
+                                        P_new(i, j, k) += N * (1 - alpha) * Beta;
+                                    }
                                 }
                             }
                         }
 
                         // Phage Decay ////////////////////////////////////////////////////////////////
-                        p = delta*dT;
-                        N = ComputeEvents(tmpP, p, 5);
-                        if (N > tmpP) N = tmpP;
-                        tmpP = max(0.0, tmpP - N);
+                        if (tmpP > 0) {
+                            p = delta*dT;
+                            N = ComputeEvents(tmpP, p, 0);
+                            if (N > tmpP) N = tmpP;
+                            tmpP = max(0.0, tmpP - N);
+                        }
 
                         // Movement ///////////////////////////////////////////////////////////////////
                         if (nGridXY > 1) {
@@ -299,21 +326,6 @@ int Colonies3D::Run(double T_end) {
 
                             }
 
-                            // CELLS
-                            B_new(i, j, k) += tmpB;
-                            if (r > 0.0) {
-                                I0_new(i, j, k) += tmpI0;
-                                I1_new(i, j, k) += tmpI1;
-                                I2_new(i, j, k) += tmpI2;
-                                I3_new(i, j, k) += tmpI3;
-                                I4_new(i, j, k) += tmpI4;
-                                I5_new(i, j, k) += tmpI5;
-                                I6_new(i, j, k) += tmpI6;
-                                I7_new(i, j, k) += tmpI7;
-                                I8_new(i, j, k) += tmpI8;
-                                I9_new(i, j, k) += tmpI9;
-                            }
-
                             // Update counts
                             double n_0; // No movement
                             double n_u; // Up
@@ -323,15 +335,169 @@ int Colonies3D::Run(double T_end) {
                             double n_f; // Front
                             double n_b; // Back
 
+                            // CELLS
+                            if (D_B > 0) {  // Check if diffusion is enabled
+
+                                // B
+                                if (tmpB > 0) {
+                                    ComputeDiffusion(tmpB, lambdaB, &n_0, &n_u, &n_d, &n_l, &n_r, &n_f, &n_b);
+                                    B_new(i, j, k)  += n_0;
+                                    B_new(ip, j, k) += n_u;
+                                    B_new(im, j, k) += n_d;
+                                    B_new(i, jp, k) += n_r;
+                                    B_new(i, jm, k) += n_l;
+                                    B_new(i, j, kp) += n_f;
+                                    B_new(i, j, km) += n_b;
+                                }
+
+                                // I0
+                                if (tmpI0 > 0) {
+                                    ComputeDiffusion(tmpI0, lambdaB, &n_0, &n_u, &n_d, &n_l, &n_r, &n_f, &n_b);
+                                    I0_new(i, j, k)  += n_0;
+                                    I0_new(ip, j, k) += n_u;
+                                    I0_new(im, j, k) += n_d;
+                                    I0_new(i, jp, k) += n_r;
+                                    I0_new(i, jm, k) += n_l;
+                                    I0_new(i, j, kp) += n_f;
+                                    I0_new(i, j, km) += n_b;
+                                }
+
+                                // I1
+                                if (tmpI1 > 0) {
+                                    ComputeDiffusion(tmpI1, lambdaB, &n_0, &n_u, &n_d, &n_l, &n_r, &n_f, &n_b);
+                                    I1_new(i, j, k)  += n_0;
+                                    I1_new(ip, j, k) += n_u;
+                                    I1_new(im, j, k) += n_d;
+                                    I1_new(i, jp, k) += n_r;
+                                    I1_new(i, jm, k) += n_l;
+                                    I1_new(i, j, kp) += n_f;
+                                    I1_new(i, j, km) += n_b;
+                                }
+
+                                // I2
+                                if (tmpI2 > 0) {
+                                    ComputeDiffusion(tmpI2, lambdaB, &n_0, &n_u, &n_d, &n_l, &n_r, &n_f, &n_b);
+                                    I2_new(i, j, k)  += n_0;
+                                    I2_new(ip, j, k) += n_u;
+                                    I2_new(im, j, k) += n_d;
+                                    I2_new(i, jp, k) += n_r;
+                                    I2_new(i, jm, k) += n_l;
+                                    I2_new(i, j, kp) += n_f;
+                                    I2_new(i, j, km) += n_b;
+                                }
+
+                                // I3
+                                if (tmpI3 > 0) {
+                                    ComputeDiffusion(tmpI3, lambdaB, &n_0, &n_u, &n_d, &n_l, &n_r, &n_f, &n_b);
+                                    I3_new(i, j, k)  += n_0;
+                                    I3_new(ip, j, k) += n_u;
+                                    I3_new(im, j, k) += n_d;
+                                    I3_new(i, jp, k) += n_r;
+                                    I3_new(i, jm, k) += n_l;
+                                    I3_new(i, j, kp) += n_f;
+                                    I3_new(i, j, km) += n_b;
+                                }
+
+                                // I4
+                                if (tmpI4 > 0) {
+                                    ComputeDiffusion(tmpI4, lambdaB, &n_0, &n_u, &n_d, &n_l, &n_r, &n_f, &n_b);
+                                    I4_new(i, j, k)  += n_0;
+                                    I4_new(ip, j, k) += n_u;
+                                    I4_new(im, j, k) += n_d;
+                                    I4_new(i, jp, k) += n_r;
+                                    I4_new(i, jm, k) += n_l;
+                                    I4_new(i, j, kp) += n_f;
+                                    I4_new(i, j, km) += n_b;
+                                }
+
+                                // I5
+                                if (tmpI5 > 0) {
+                                    ComputeDiffusion(tmpI5, lambdaB, &n_0, &n_u, &n_d, &n_l, &n_r, &n_f, &n_b);
+                                    I5_new(i, j, k)  += n_0;
+                                    I5_new(ip, j, k) += n_u;
+                                    I5_new(im, j, k) += n_d;
+                                    I5_new(i, jp, k) += n_r;
+                                    I5_new(i, jm, k) += n_l;
+                                    I5_new(i, j, kp) += n_f;
+                                    I5_new(i, j, km) += n_b;
+                                }
+
+                                // I6
+                                if (tmpI6 > 0) {
+                                    ComputeDiffusion(tmpI6, lambdaB, &n_0, &n_u, &n_d, &n_l, &n_r, &n_f, &n_b);
+                                    I6_new(i, j, k)  += n_0;
+                                    I6_new(ip, j, k) += n_u;
+                                    I6_new(im, j, k) += n_d;
+                                    I6_new(i, jp, k) += n_r;
+                                    I6_new(i, jm, k) += n_l;
+                                    I6_new(i, j, kp) += n_f;
+                                    I6_new(i, j, km) += n_b;
+                                }
+
+                                // I7
+                                if (tmpI7 > 0) {
+                                    ComputeDiffusion(tmpI7, lambdaB, &n_0, &n_u, &n_d, &n_l, &n_r, &n_f, &n_b);
+                                    I7_new(i, j, k)  += n_0;
+                                    I7_new(ip, j, k) += n_u;
+                                    I7_new(im, j, k) += n_d;
+                                    I7_new(i, jp, k) += n_r;
+                                    I7_new(i, jm, k) += n_l;
+                                    I7_new(i, j, kp) += n_f;
+                                    I7_new(i, j, km) += n_b;
+                                }
+
+                                // I8
+                                if (tmpI8 > 0) {
+                                    ComputeDiffusion(tmpI8, lambdaB, &n_0, &n_u, &n_d, &n_l, &n_r, &n_f, &n_b);
+                                    I8_new(i, j, k)  += n_0;
+                                    I8_new(ip, j, k) += n_u;
+                                    I8_new(im, j, k) += n_d;
+                                    I8_new(i, jp, k) += n_r;
+                                    I8_new(i, jm, k) += n_l;
+                                    I8_new(i, j, kp) += n_f;
+                                    I8_new(i, j, km) += n_b;
+                                }
+
+                                // I9
+                                if (tmpI9 > 0) {
+                                    ComputeDiffusion(tmpI9, lambdaB, &n_0, &n_u, &n_d, &n_l, &n_r, &n_f, &n_b);
+                                    I9_new(i, j, k)  += n_0;
+                                    I9_new(ip, j, k) += n_u;
+                                    I9_new(im, j, k) += n_d;
+                                    I9_new(i, jp, k) += n_r;
+                                    I9_new(i, jm, k) += n_l;
+                                    I9_new(i, j, kp) += n_f;
+                                    I9_new(i, j, km) += n_b;
+                                }
+
+                            } else {    // If no diffusion, just update values
+
+                                B_new(i, j, k) += tmpB;
+                                if (r > 0.0) {
+                                    I0_new(i, j, k) += tmpI0;
+                                    I1_new(i, j, k) += tmpI1;
+                                    I2_new(i, j, k) += tmpI2;
+                                    I3_new(i, j, k) += tmpI3;
+                                    I4_new(i, j, k) += tmpI4;
+                                    I5_new(i, j, k) += tmpI5;
+                                    I6_new(i, j, k) += tmpI6;
+                                    I7_new(i, j, k) += tmpI7;
+                                    I8_new(i, j, k) += tmpI8;
+                                    I9_new(i, j, k) += tmpI9;
+                                }
+                            }
+
                             // PHAGES
-                            ComputeDiffusion(tmpP, lambdaP, &n_0, &n_u, &n_d, &n_l, &n_r, &n_f, &n_b, 3);
-                            P_new(i, j, k)  += n_0;
-                            P_new(ip, j, k) += n_u;
-                            P_new(im, j, k) += n_d;
-                            P_new(i, jp, k) += n_r;
-                            P_new(i, jm, k) += n_l;
-                            P_new(i, j, kp) += n_f;
-                            P_new(i, j, km) += n_b;
+                            if (tmpP > 0) {
+                                ComputeDiffusion(tmpP, lambdaP, &n_0, &n_u, &n_d, &n_l, &n_r, &n_f, &n_b);
+                                P_new(i, j, k)  += n_0;
+                                P_new(ip, j, k) += n_u;
+                                P_new(im, j, k) += n_d;
+                                P_new(i, jp, k) += n_r;
+                                P_new(i, jm, k) += n_l;
+                                P_new(i, j, kp) += n_f;
+                                P_new(i, j, km) += n_b;
+                            }
 
 			                // NUTRIENT
                             nutrient(i, j, k) = tmpNutrient;
@@ -442,16 +608,18 @@ int Colonies3D::Run(double T_end) {
 
             // Update arrays
             B.swap(B_new);                  B_new.zeros();
-            I0.swap(I0_new);                I0_new.zeros();
-            I1.swap(I1_new);                I1_new.zeros();
-            I2.swap(I2_new);                I2_new.zeros();
-            I3.swap(I3_new);                I3_new.zeros();
-            I4.swap(I4_new);                I4_new.zeros();
-            I5.swap(I5_new);                I5_new.zeros();
-            I6.swap(I6_new);                I6_new.zeros();
-            I7.swap(I7_new);                I7_new.zeros();
-            I8.swap(I8_new);                I8_new.zeros();
-            I9.swap(I9_new);                I9_new.zeros();
+            if (r > 0.0) {
+                I0.swap(I0_new);                I0_new.zeros();
+                I1.swap(I1_new);                I1_new.zeros();
+                I2.swap(I2_new);                I2_new.zeros();
+                I3.swap(I3_new);                I3_new.zeros();
+                I4.swap(I4_new);                I4_new.zeros();
+                I5.swap(I5_new);                I5_new.zeros();
+                I6.swap(I6_new);                I6_new.zeros();
+                I7.swap(I7_new);                I7_new.zeros();
+                I8.swap(I8_new);                I8_new.zeros();
+                I9.swap(I9_new);                I9_new.zeros();
+            }
             P.swap(P_new);                  P_new.zeros();
             nutrient.swap(nutrient_new);    nutrient_new.zeros();
 
@@ -463,16 +631,19 @@ int Colonies3D::Run(double T_end) {
             nC(I) = Occ(I);
 
             if ((maxOccupancy > L * L * H / (nGridXY * nGridXY * nGridZ)) and (!Warn_density)) {
-                cout << "\tWarning: Maximum Density Large!" << "\n";
+                cout << "\tWarning: Maximum Density Large!" << endl;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ;
                 f_log  << "Warning: Maximum Density Large!" << "\n";
                 Warn_density = true;
             }
+
         }
 
         // 2) There are no more alive cells
         // -> Stop simulation
 
         if ((fastExit) and (accu(Occ) < 1)) {
+            cout << "\t>>Bacteria have been eliminated! Exiting...<<" << endl;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ;
+            f_log  << ">>Bacteria have been eliminated! Exiting...<<" << "\n";
             exit = true;
         }
 
@@ -480,7 +651,9 @@ int Colonies3D::Run(double T_end) {
         // and the maximal nutrient at any point in space is less than 1
 
         if (fastExit) {
-            if  ((accu(nutrient) < nGridZ*pow(nGridXY,2)) and (nutrient.max() < 0.5)) {
+            if  (nutrient.max() < 1.0) {
+                cout << "\t>>Nutrient consumed! Exiting...<<" << endl;
+                f_log  << ">>Nutrient consumed! Exiting...<<" << "\n";
                 exit = true;
             }
         }
@@ -504,36 +677,31 @@ int Colonies3D::Run(double T_end) {
     minutes -= hours*60;
     seconds -= minutes*60 + hours*3600;
 
-    cout << "\n";
     cout << "\tSimulation complete after ";
     if (hours > 0.0)   cout << hours   << " hours and ";
     if (minutes > 0.0) cout << minutes << " minutes and ";
-    cout  << seconds << " seconds." << "\n";
+    cout  << seconds << " seconds." << "\n" << endl;
 
     std::ofstream f_out;
     f_out.open(GetPath() + "/Completed.txt",fstream::trunc);
     f_out << "\tSimulation complete after ";
     if (hours > 0.0)   f_out << hours   << " hours and ";
     if (minutes > 0.0) f_out << minutes << " minutes and ";
-    f_out  << seconds << " seconds." << "\n";
+    f_out  << seconds << " seconds." << "\n\n";
     f_out.flush();
     f_out.close();
 
-    // Write sucess to log
+    // Write success to log
     if (exit) {
-        f_log << ">>Simulation completed with exit flag<<" << "\n";
+        f_log << ">>Simulation completed with exit flag<<" << endl;
     } else {
-        f_log << ">>Simulation completed without exit flag<<" << "\n";
+        f_log << ">>Simulation completed without exit flag<<" << endl;
     }
 
     if (true) {
     std::ofstream f_timing;
-    // cout << "\n";
-    f_timing << "\t"       << setw(3) << difftime(toc, tic) << " s of total time" << "\n";
-
-    f_timing.flush();
+    f_timing << "\t"       << setw(3) << difftime(toc, tic) << " s of total time" << endl;
     f_timing.close();
-    // cout << "\t----------------------------------------------------"<< "\n" << "\n" << "\n";
     }
 
     if (exit) {
@@ -713,7 +881,7 @@ void Colonies3D::spawnBacteria() {
     }
 
     // Write output
-    if (nBacteria == 1) {
+    if ((nBacteria == 1) and (H != L))  {
 
         uvec h = find(B);
 
@@ -932,13 +1100,24 @@ double Colonies3D::ComputeEvents(double n, double p, int flag) {
     if (p == 0) return 0.0;
     if (n < 1)  return 0.0;
 
-    double N = RandP(n*p);
+    double N = 0;
 
-    return round(N);
+    // If flag is 1, then use binomial distribution
+    if (flag == 1) {
+        for (int i = 0; i < n; i++) {
+            if (rand(rng) < p) N = N + 1;
+        }
+
+    // Else use Poisson distribution
+    } else {
+        N = round(RandP(n*p));
+    }
+
+    return N;
 }
 
 // Computes how many particles has moved to neighbouring points
-void Colonies3D::ComputeDiffusion(double n, double lambda, double* n_0, double* n_u, double* n_d, double* n_l, double* n_r, double* n_f, double* n_b, int flag) {
+void Colonies3D::ComputeDiffusion(double n, double lambda, double* n_0, double* n_u, double* n_d, double* n_l, double* n_r, double* n_f, double* n_b) {
 
     // Reset positions
     *n_0 = 0.0;
@@ -1132,6 +1311,7 @@ void Colonies3D::WriteLog() {
         f_log << "experimentalConditions = "    << experimentalConditions   << "\n";
         f_log << "clustering = "                << clustering               << "\n";
         f_log << "shielding = "                 << shielding                << "\n";
+        f_log << "singleInternalState = "       << singleInternalState      << "\n";
         f_log << "reducedBeta = "               << reducedBeta              << "\n";
         f_log << "reducedBoundary = "           << reducedBoundary          << endl;
 
@@ -1345,10 +1525,10 @@ string Colonies3D::GeneratePath() {
     return path_s;
 }
 
-// Sets the folder number (useful when running parralel code)
+// Sets the folder number (useful when running parallel code)
 void Colonies3D::SetFolderNumber(int number) {path = to_string(number);}
 
-// Sets the folder path (useful when running parralel code)
+// Sets the folder path (useful when running parallel code)
 void Colonies3D::SetPath(std::string& path) {this->path = path;}
 
 // Returns the save path

@@ -65,7 +65,9 @@ int main(int argc, char** argv){
                     char buffer[80];                                  // Create a buffer to store the strings
 
                     string pathName = "";
-                    pathName += "Experiment_Conditions/beta_";
+                    pathName += "Experiment_Conditions";
+
+                    pathName += "/beta_";
                     pathName += to_string(beta);
 
                     pathName += "_delta_";

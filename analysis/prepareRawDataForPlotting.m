@@ -13,7 +13,7 @@ else
     
     % Check varargin has valid path
     if exist(varargin{1},'dir')
-        d = dir(varargin{1});
+        d = dir(varargin{1}); 
     else
         return;
     end
@@ -98,12 +98,10 @@ for i = 1:length(d)
             n = nan(length(CFU),length(PFU),5000);
             b = nan(length(CFU),length(PFU),5000);
             B = nan(length(CFU),length(PFU),5000);
-            C = nan(length(CFU),length(PFU),5000);
             I = nan(length(CFU),length(PFU),5000);
-            D = nan(length(CFU),length(PFU),5000);
             P = nan(length(CFU),length(PFU),5000);
             nC = nan(length(CFU),length(PFU),5000);
-            foo = nan(length(CFU),length(PFU),5000);
+            simTime = nan(length(CFU),length(PFU));
             
             for c = 1:length(CFU)
                 for p = 1:length(PFU)
@@ -112,7 +110,8 @@ for i = 1:length(d)
                         return
                     end
                     
-                    display([path sprintf('CFU_1e%.2f_PFU_1e%.2f/',log10(CFU(c)),log10(PFU(p)))])
+                    foo = strsplit(path,'data/');
+                    display([foo{2} sprintf('CFU_1e%.2f_PFU_1e%.2f/',log10(CFU(c)),log10(PFU(p)))])
                     
                     fh = fopen([path sprintf('CFU_1e%.2f_PFU_1e%.2f/log.txt',log10(CFU(c)),log10(PFU(p)))]);
                     try
@@ -137,11 +136,28 @@ for i = 1:length(d)
                     end
 
                     B(c,p,1:(T_end*nSamp+1)) = pop.data(:,2);
-%                     I(c,p,1:(T_end*nSamp+1)) = pop.data(:,3);
+                    I(c,p,1:(T_end*nSamp+1)) = pop.data(:,3);
                     P(c,p,1:(T_end*nSamp+1)) = pop.data(:,4);
                     f(c,p,1:(T_end*nSamp+1)) = pop.data(:,5);
                     n(c,p,1:(T_end*nSamp+1)) = pop.data(:,6);
+                    nC(c,p,1:(T_end*nSamp+1)) = pop.data(:,7);
                     b(c,p,1:(T_end*nSamp+1)) = sum(pop.data(:,2:3),2);
+                    
+                    fh = fopen([path sprintf('CFU_1e%.2f_PFU_1e%.2f/Completed.txt',log10(CFU(c)),log10(PFU(p)))]);
+                    try
+                        str = strsplit(fgetl(fh),' ');                        
+                        if numel(str) == 11
+                            simTime(c,p) = 3600*str2double(str{4}) + 60*str2double(str{7}) + str2double(str{10});
+                        elseif numel(str) >= 8
+                            simTime(c,p) = 60*str2double(str{4}) + str2double(str{7});
+                        elseif numel(str) >= 5
+                            simTime(c,p) = str2double(str{4});
+                        end
+                        
+                    catch
+                    end
+                    fclose(fh);
+                    
 
                 end
             end
@@ -150,14 +166,15 @@ for i = 1:length(d)
             % Save the data
             T = (0:(T_end*nSamp))/nSamp;
             B = B(:,:,1:(T_end*nSamp+1));
-%             I = I(:,:,1:(T_end*nSamp+1));
+            I = I(:,:,1:(T_end*nSamp+1));
             P = P(:,:,1:(T_end*nSamp+1));
             f = f(:,:,1:(T_end*nSamp+1));
             n = n(:,:,1:(T_end*nSamp+1));
+            nC = nC(:,:,1:(T_end*nSamp+1));
             b = b(:,:,1:(T_end*nSamp+1));
             
             foo = strsplit(path,'/');
-            save([path 'data_' foo{end-2} '.mat'],'PFU','CFU','T','n','b','f','B','I','P');
+            save([path 'data_' foo{end-2} '.mat'],'PFU','CFU','T','n','b','f','B','I','P','simTime');
             
             return % Do not go deeper upon success.
         else % Continue into folder

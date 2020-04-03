@@ -24,7 +24,7 @@ for i = 1:n
     switch i
         case 1
             subpaths = dir(sprintf('%s/Model_4',path));
-            importPath = sprintf('%s/Model_4/%s/data_Model_4.mat',path,subpaths(end).name);
+            importPath = sprintf('%s/Model_4/%s/data_Model_4.mat',path,subpaths(11).name);
         case 2
             subpaths = dir(sprintf('%s/Model_5',path));
             importPath = sprintf('%s/Model_5/%s/data_Model_5.mat',path,subpaths(end).name);
@@ -45,6 +45,7 @@ for i = 1:n
         
         ax(I).OuterPosition = [mar+sep+(j-1)*(wid+sep)    (n-i)*(hei+sep)+mar+sep   wid hei];
         ax(I).Position      = [mar+sep+(j-1)*(wid+sep)    (n-i)*(hei+sep)+mar+sep   wid hei];
+        
         
         % Calculate which time to plot:
         t = T(j);

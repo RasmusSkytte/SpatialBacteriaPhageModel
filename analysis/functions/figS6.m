@@ -26,13 +26,13 @@ for i = 1:n
             subpaths = dir(sprintf('%s/Model_3',path));
             importPath = sprintf('%s/Model_3/%s/data_Model_3.mat',path,subpaths(end).name);
         case 2
-            subpaths = dir(sprintf('%s/Model_4',path));
+            subpaths = dir(sprintf('%s/Model_4_onlyClustering',path));
             importPath = sprintf('%s/Model_4_onlyClustering/%s/data_Model_4_onlyClustering.mat',path,subpaths(end).name);
         case 3
-            subpaths = dir(sprintf('%s/Model_4',path));
+            subpaths = dir(sprintf('%s/Model_4_onlyShielding',path));
             importPath = sprintf('%s/Model_4_onlyShielding/%s/data_Model_4_onlyShielding.mat',path,subpaths(end).name);
         case 4
-            subpaths = dir(sprintf('%s/Model_4',path));
+            subpaths = dir(sprintf('%s/Model_4_onlyReadsorption',path));
             importPath = sprintf('%s/Model_4_onlyReadsorption/%s/data_Model_4_onlyReadsorption.mat',path,subpaths(end).name);
     end
     model = importdata(importPath);
